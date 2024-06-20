@@ -40,6 +40,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Jump()
     {
+
         body.velocity = new Vector2(body.velocity.x, speed);
         anim.SetTrigger("jump");
         
@@ -52,7 +53,7 @@ public class PlayerMovement : MonoBehaviour
 
     private bool isGrounded()
     {
-        RaycastHit2D raycastHit = Physics2D.BoxCast(boxCollider.bounds.center, boxCollider.bounds.size, 0, Vector2.down, 01f, groundLayer);
-        return raycastHit.collider != null;
+        RaycastHit2D rayCastHit = Physics2D.BoxCast(boxCollider.bounds.center, boxCollider.bounds.size, 0, Vector2.down, 01f, groundLayer);
+        return rayCastHit.collider != null;
     }
 }
