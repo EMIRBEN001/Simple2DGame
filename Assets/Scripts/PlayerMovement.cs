@@ -24,9 +24,9 @@ public class PlayerMovement : MonoBehaviour
 
         // this is basically for flipping the character if it moves left or right and faces that direction
         if(horizontalInput > 0.01f)
-            transform.localScale = Vector3.one;
+            transform.localScale = Vector2.one;
         else if (horizontalInput < -0.01f)
-            transform.localScale = new Vector3(-1, 1, 1); //if u try to put this position on the unity editor it's gonna flip it
+            transform.localScale = new Vector2(-1, 1); //if u try to put this position on the unity editor it's gonna flip it
 
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded())//Jump
             Jump();
@@ -40,6 +40,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Jump()
     {
+
         body.velocity = new Vector2(body.velocity.x, speed);
         anim.SetTrigger("jump");
         
@@ -52,7 +53,7 @@ public class PlayerMovement : MonoBehaviour
 
     private bool isGrounded()
     {
-        RaycastHit2D raycastHit = Physics2D.BoxCast(boxCollider.bounds.center, boxCollider.bounds.size, 0, Vector2.down, 01f, groundLayer);
-        return raycastHit.collider != null;
+        RaycastHit2D rayCastHit = Physics2D.BoxCast(boxCollider.bounds.center, boxCollider.bounds.size, 0, Vector2.down, 01f, groundLayer);
+        return rayCastHit.collider != null;
     }
 }
