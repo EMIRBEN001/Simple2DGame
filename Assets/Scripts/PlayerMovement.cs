@@ -1,16 +1,22 @@
 using UnityEngine;
+using TMPro;
 
 public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] private float speed;
+    [SerializeField] private float jumpForce;
     [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private TextMeshProUGUI WINTEXT;
+    [SerializeField] private float jumpCooldown = 0.2f; // Time between jumps
+
     private Rigidbody2D body;
     private Animator anim;
     private BoxCollider2D boxCollider;
+    private bool canJump = true;
 
     private void Awake()
     {
-        //Grab References
+        // Grab references
         anim = GetComponent<Animator>();
         body = GetComponent<Rigidbody2D>();
         boxCollider = GetComponent<BoxCollider2D>();
@@ -19,41 +25,48 @@ public class PlayerMovement : MonoBehaviour
     private void Update()
     {
         float horizontalInput = Input.GetAxis("Horizontal");
-        body.velocity = new Vector2(horizontalInput * speed ,body.velocity.y);
+        body.velocity = new Vector2(horizontalInput * speed, body.velocity.y);
 
-
-        // this is basically for flipping the character if it moves left or right and faces that direction
-        if(horizontalInput > 0.01f)
+        // Flip character based on movement direction
+        if (horizontalInput > 0.01f)
             transform.localScale = Vector2.one;
         else if (horizontalInput < -0.01f)
-            transform.localScale = new Vector2(-1, 1); //if u try to put this position on the unity editor it's gonna flip it
+            transform.localScale = new Vector2(-1, 1);
 
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded())//Jump
+        // Jump logic
+        if (Input.GetKeyDown(KeyCode.Space) && isGrounded() && canJump)
             Jump();
 
-        //set animator parameters
-        anim.SetBool("run", horizontalInput != 0); //basically if arrow key is not pressed the horinput is 0, is 0 not equal to 0? = false, run = false(no running sad)
+        // Set animator parameters
+        anim.SetBool("run", horizontalInput != 0);
         anim.SetBool("grounded", isGrounded());
-
-        
     }
 
     private void Jump()
     {
-
-        body.velocity = new Vector2(body.velocity.x, speed);
+        body.velocity = new Vector2(body.velocity.x, jumpForce);
         anim.SetTrigger("jump");
-        
+        canJump = false;
+        Invoke(nameof(ResetJump), jumpCooldown); //Reset jump after cooldown
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void ResetJump()
     {
-
+        canJump = true;
     }
 
     private bool isGrounded()
     {
-        RaycastHit2D rayCastHit = Physics2D.BoxCast(boxCollider.bounds.center, boxCollider.bounds.size, 0, Vector2.down, 01f, groundLayer);
+        RaycastHit2D rayCastHit = Physics2D.BoxCast(boxCollider.bounds.center, boxCollider.bounds.size, 0, Vector2.down, 0.1f, groundLayer);
         return rayCastHit.collider != null;
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.tag == "Win!!!")
+        {
+            WINTEXT.gameObject.SetActive(true);
+            Time.timeScale = 0;
+        }
     }
 }
